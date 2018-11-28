@@ -161,6 +161,9 @@ function demo::install-cni-genie {
 function demo::install-cri-proxy {
   local virtlet_node="${1}"
   demo::step "Installing CRI proxy package on ${virtlet_node} container"
+  if [[ ${DIND_CRI:-} = containerd ]]; then
+    docker exec "${virtlet_node}" /bin/bash -c 'echo criproxy-nodeps criproxy/primary_cri select containerd | debconf-set-selections'
+  fi
   docker exec "${virtlet_node}" /bin/bash -c "curl -sSL '${CRIPROXY_DEB_URL}' >/criproxy.deb && dpkg -i /criproxy.deb && rm /criproxy.deb"
 }
 
